@@ -23,7 +23,7 @@ type Requester struct {
 }
 
 // Private func that handles making http requests
-func (r *Requester) request(method, path string, body []byte, opts *RequestOpts) (resp *http.Response, err error) {
+func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp *http.Response, err error) {
 	var u *url.URL
 	if u, err = getURL(r.baseURL, path); err != nil {
 		return
@@ -51,21 +51,21 @@ func (r *Requester) request(method, path string, body []byte, opts *RequestOpts)
 }
 
 // Get will make an HTTP GET Request
-func (r *Requester) Get(path string, opts *RequestOpts) (resp *http.Response, err error) {
+func (r *Requester) Get(path string, opts *Opts) (resp *http.Response, err error) {
 	return r.request(http.MethodGet, path, nil, opts)
 }
 
 // Put will make an HTTP Put Request
-func (r *Requester) Put(path string, body []byte, opts *RequestOpts) (resp *http.Response, err error) {
+func (r *Requester) Put(path string, body []byte, opts *Opts) (resp *http.Response, err error) {
 	return r.request(http.MethodPut, path, body, opts)
 }
 
 // Post will make an HTTP POST Request
-func (r *Requester) Post(path string, body []byte, opts *RequestOpts) (resp *http.Response, err error) {
+func (r *Requester) Post(path string, body []byte, opts *Opts) (resp *http.Response, err error) {
 	return r.request(http.MethodPost, path, body, opts)
 }
 
 // Delete will make an HTTP DELETE Request
-func (r *Requester) Delete(path string, opts *RequestOpts) (resp *http.Response, err error) {
+func (r *Requester) Delete(path string, opts *Opts) (resp *http.Response, err error) {
 	return r.request(http.MethodDelete, path, nil, opts)
 }
