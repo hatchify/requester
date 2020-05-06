@@ -6,8 +6,8 @@ import (
 	"net/url"
 )
 
-// NewRequester will create a new instance of Requester
-func NewRequester(hc *http.Client, baseURL string) (rp *Requester) {
+// New will create a new instance of Requester
+func New(hc *http.Client, baseURL string) (rp *Requester) {
 	var r Requester
 	r.hc = hc
 	r.baseURL = baseURL
