@@ -29,25 +29,39 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 		return
 	}
 
+	r.setQuery(opts, u)
+
 	var req *http.Request
 	if req, err = http.NewRequest(method, u.String(), bytes.NewReader(body)); err != nil {
 		return
 	}
 
+	r.setHeaders(opts, req)
+
+	return r.hc.Do(req)
+}
+
+// Private func that will set the query pararms for a request
+func (r *Requester) setQuery(opts *Opts, u *url.URL) {
 	if opts == nil {
-		return r.hc.Do(req)
+		return
 	}
 
 	if opts.query != nil {
 		u.RawQuery = opts.query.Encode()
+	}
+}
+
+// Private func that will set the headers for a request
+func (r *Requester) setHeaders(opts *Opts, req *http.Request) {
+	if opts == nil {
+		return
 	}
 
 	opts.headers.ForEach(func(headerKey, headerVal string) (err error) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
-
-	return r.hc.Do(req)
 }
 
 // Get will make an HTTP GET Request

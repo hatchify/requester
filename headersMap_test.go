@@ -15,15 +15,11 @@ const (
 )
 
 func Test_NewHeadersMap(t *testing.T) {
-	headersMap, err := NewHeadersMap(
+	headersMap := NewHeadersMap(
 		Header{Key: contentTypeKey, Val: contentTypeVal},
 		Header{Key: contentLengthKey, Val: contentLengthVal},
 		Header{Key: xAPIKeyKey, Val: xAPIKeyVal},
 	)
-
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	if l := len(headersMap); l != 3 {
 		t.Fatalf("invalid length: expected length of 3, received %d", l)

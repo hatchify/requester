@@ -1,9 +1,9 @@
 package requester
 
 // NewHeadersMap will return a new instance of HeadersMap
-func NewHeadersMap(headerKeyVals ...Header) (headersMap HeadersMap, err error) {
+func NewHeadersMap(headerKeyVals ...Header) (headersMap HeadersMap) {
 	headersMap = make(HeadersMap)
-	err = headersMap.Add(headerKeyVals...)
+	headersMap.Add(headerKeyVals...)
 	return
 }
 
@@ -11,7 +11,7 @@ func NewHeadersMap(headerKeyVals ...Header) (headersMap HeadersMap, err error) {
 type HeadersMap map[string]string
 
 // Add will add headers to the headers map
-func (h HeadersMap) Add(headerKeyVals ...Header) (err error) {
+func (h HeadersMap) Add(headerKeyVals ...Header) {
 	for _, header := range headerKeyVals {
 		h[header.Key] = header.Val
 	}
