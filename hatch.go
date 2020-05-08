@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/http/cookiejar"
 )
 
 // NewHatch ...
@@ -11,6 +12,7 @@ func NewHatch(username, password string) (hp *Hatch) {
 	var h Hatch
 	h.username = username
 	h.password = password
+	h.hc.Jar, _ = cookiejar.New(nil)
 	hp = &h
 	return
 }

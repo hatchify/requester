@@ -37,7 +37,7 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 	}
 
 	r.setHeaders(opts, req)
-	r.setCookies(req)
+	// r.setCookies(req)
 
 	return r.hc.Do(req)
 }
