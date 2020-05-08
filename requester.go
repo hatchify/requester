@@ -37,14 +37,14 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 	}
 
 	r.setHeaders(opts, req)
-	r.setCookies(r.hc.Jar, req)
+	r.setCookies(req)
 
 	return r.hc.Do(req)
 }
 
-func (r *Requester) setCookies(jar http.CookieJar, req *http.Request) (err error) {
+func (r *Requester) setCookies(req *http.Request) (err error) {
 	var cookies []*http.Cookie
-	if cookies, err = getCookiesForRequest(jar); err != nil {
+	if cookies, err = getCookiesForRequest(r.hc.Jar); err != nil {
 		return
 	}
 
