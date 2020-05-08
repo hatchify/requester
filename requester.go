@@ -2,6 +2,7 @@ package requester
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -37,19 +38,19 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 	}
 
 	r.setHeaders(opts, req)
-	// r.setCookies(req)
-
+	if err = r.modify(opts, req); err != nil {
+		return
+	}
+	fmt.Printf("hc cookies: %v\n\n", r.hc.Jar)
 	return r.hc.Do(req)
 }
 
-func (r *Requester) setCookies(req *http.Request) (err error) {
-	var cookies []*http.Cookie
-	if cookies, err = getCookiesForRequest(r.hc.Jar); err != nil {
-		return
-	}
-
-	for _, cookie := range cookies {
-		req.AddCookie(cookie)
+// Private func will modify a request prior to execution
+func (r *Requester) modify(opts *Opts, req *http.Request) (err error) {
+	for _, modifier := range opts.modifiers {
+		if err = modifier(req); err != nil {
+			return
+		}
 	}
 
 	return

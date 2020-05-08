@@ -1,6 +1,7 @@
 package requester
 
 import (
+	"net/http"
 	"net/url"
 )
 
@@ -15,6 +16,10 @@ func NewOpts(query url.Values, headers HeadersMap) (op *Opts) {
 
 // Opts represents optional parameters for an HTTP Request
 type Opts struct {
-	query   url.Values
-	headers HeadersMap
+	query     url.Values
+	headers   HeadersMap
+	modifiers []Modifier
 }
+
+// Modifier is the  modifier func that will modify a request
+type Modifier func(r *http.Request) (err error)
