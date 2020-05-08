@@ -10,6 +10,7 @@ func NewOpts(query url.Values, headers HeadersMap, modifiers ...Modifier) (op *O
 	var o Opts
 	o.query = query
 	o.headers = headers
+	o.modifiers = append(o.modifiers, modifiers...)
 	op = &o
 	return
 }
@@ -18,7 +19,7 @@ func NewOpts(query url.Values, headers HeadersMap, modifiers ...Modifier) (op *O
 type Opts struct {
 	query     url.Values
 	headers   HeadersMap
-	modifiers Modifier
+	modifiers []Modifier
 }
 
 // Modifier is the  modifier func that will modify a request
