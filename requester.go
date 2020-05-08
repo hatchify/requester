@@ -2,7 +2,6 @@ package requester
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -38,10 +37,11 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 	}
 
 	r.setHeaders(opts, req)
+
 	if err = r.modify(opts, req); err != nil {
 		return
 	}
-	fmt.Printf("hc cookies: %v\n\n", r.hc.Jar)
+
 	return r.hc.Do(req)
 }
 
