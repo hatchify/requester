@@ -6,7 +6,7 @@ import (
 )
 
 // NewOpts will return a new instance of RequestOpts
-func NewOpts(query url.Values, headers HeadersMap) (op *Opts) {
+func NewOpts(query url.Values, headers HeadersMap, modifiers ...Modifier) (op *Opts) {
 	var o Opts
 	o.query = query
 	o.headers = headers
@@ -18,7 +18,7 @@ func NewOpts(query url.Values, headers HeadersMap) (op *Opts) {
 type Opts struct {
 	query     url.Values
 	headers   HeadersMap
-	modifiers []Modifier
+	modifiers Modifier
 }
 
 // Modifier is the  modifier func that will modify a request
