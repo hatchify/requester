@@ -26,7 +26,6 @@ func getCookiesForRequest(jar http.CookieJar) (cookies []*http.Cookie, err error
 
 	for _, domainCookies := range cookieJar.Entries {
 		for _, entry := range domainCookies {
-
 			cookies = append(cookies, &http.Cookie{Name: entry.Name, Value: entry.Value})
 		}
 	}
