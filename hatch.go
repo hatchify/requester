@@ -17,7 +17,7 @@ func NewHatch(username, password string) (hp *Hatch) {
 	return
 }
 
-const baseURL = "http://prod.usehatchapp.com"
+const baseURL = "https://staging.usehatchapp.com"
 
 // Hatch ...
 type Hatch struct {
@@ -29,7 +29,7 @@ type Hatch struct {
 
 func (h *Hatch) login() (err error) {
 	payload := map[string]string{
-		"username": h.username,
+		"email":    h.username,
 		"password": h.password,
 	}
 
@@ -39,7 +39,7 @@ func (h *Hatch) login() (err error) {
 	}
 
 	var resp *http.Response
-	if resp, err = New(&h.hc, baseURL).Post("api/login", bs, nil); err != nil {
+	if resp, err = New(&h.hc, baseURL).Post("/api/login", bs, nil); err != nil {
 		return
 	}
 
