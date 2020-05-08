@@ -37,8 +37,22 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 	}
 
 	r.setHeaders(opts, req)
+	r.setCookies(r.hc.Jar, req)
 
 	return r.hc.Do(req)
+}
+
+func (r *Requester) setCookies(jar http.CookieJar, req *http.Request) (err error) {
+	var cookies []*http.Cookie
+	if cookies, err = getCookiesForRequest(jar); err != nil {
+		return
+	}
+
+	for _, cookie := range cookies {
+		req.AddCookie(cookie)
+	}
+
+	return
 }
 
 // Private func that will set the query pararms for a request
