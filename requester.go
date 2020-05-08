@@ -29,16 +29,16 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 		return
 	}
 
-	r.setQuery(opts, u)
+	r.setQuery(u, opts)
 
 	var req *http.Request
 	if req, err = http.NewRequest(method, u.String(), bytes.NewReader(body)); err != nil {
 		return
 	}
 
-	r.setHeaders(opts, req)
+	r.setHeaders(req, opts)
 
-	if err = r.modify(opts, req); err != nil {
+	if err = r.modify(req, opts); err != nil {
 		return
 	}
 
@@ -46,7 +46,7 @@ func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp 
 }
 
 // Private func will modify a request prior to execution
-func (r *Requester) modify(opts *Opts, req *http.Request) (err error) {
+func (r *Requester) modify(req *http.Request, opts *Opts) (err error) {
 	for _, modifier := range opts.modifiers {
 		if err = modifier(req); err != nil {
 			return
@@ -57,7 +57,7 @@ func (r *Requester) modify(opts *Opts, req *http.Request) (err error) {
 }
 
 // Private func that will set the query pararms for a request
-func (r *Requester) setQuery(opts *Opts, u *url.URL) {
+func (r *Requester) setQuery(u *url.URL, opts *Opts) {
 	if opts == nil {
 		return
 	}
@@ -68,7 +68,7 @@ func (r *Requester) setQuery(opts *Opts, u *url.URL) {
 }
 
 // Private func that will set the headers for a request
-func (r *Requester) setHeaders(opts *Opts, req *http.Request) {
+func (r *Requester) setHeaders(req *http.Request, opts *Opts) {
 	if opts == nil {
 		return
 	}
