@@ -31,4 +31,4 @@ func (h Headers) ForEach(fn func(key, val string) error) (err error) {
 }
 
 // Header is a helper struct for creating a HeadersMap entry
-type Header kv
+type Header KV

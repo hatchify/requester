@@ -10,9 +10,3 @@ func getURL(baseURL, path string) (u *url.URL, err error) {
 	u.Path = path
 	return
 }
-
-// kv is a helper struct for key/val pairs
-type kv struct {
-	Key string
-	Val string
-}

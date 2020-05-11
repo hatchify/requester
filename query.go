@@ -46,4 +46,4 @@ func (q Query) Encode() string {
 }
 
 // QueryParam is a helper struct for creating a Query entry
-type QueryParam kv
+type QueryParam KV
