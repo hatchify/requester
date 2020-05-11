@@ -2,6 +2,7 @@ package requester
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -23,63 +24,70 @@ type Requester struct {
 }
 
 // Private func that handles making http requests
-func (r *Requester) request(method, path string, body []byte, opts *Opts) (resp *http.Response, err error) {
+func (r *Requester) request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 	var u *url.URL
 	if u, err = getURL(r.baseURL, path); err != nil {
 		return
 	}
-
-	r.setQuery(opts, u)
 
 	var req *http.Request
 	if req, err = http.NewRequest(method, u.String(), bytes.NewReader(body)); err != nil {
 		return
 	}
 
-	r.setHeaders(opts, req)
+	if err = r.setOpts(req, opts); err != nil {
+		return
+	}
 
 	return r.hc.Do(req)
 }
 
-// Private func that will set the query pararms for a request
-func (r *Requester) setQuery(opts *Opts, u *url.URL) {
-	if opts == nil {
-		return
+func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
+	for _, opt := range opts {
+		switch t := opt.(type) {
+		case Query:
+			r.setQuery(req, t)
+		case Headers:
+			r.setHeaders(req, t)
+		case Modifier:
+			err = t(req, r.hc)
+		default:
+			err = fmt.Errorf("invalid opts type: expected \"Query\", \"Headers\", or \"Modifier\", received \"%T\"", opt)
+		}
 	}
 
-	if opts.query != nil {
-		u.RawQuery = opts.query.Encode()
-	}
+	return
 }
 
-// Private func that will set the headers for a request
-func (r *Requester) setHeaders(opts *Opts, req *http.Request) {
-	if opts == nil {
-		return
-	}
+// Private func that will set the query pararms for a request
+func (r *Requester) setQuery(req *http.Request, query Query) {
+	req.URL.RawQuery = query.Encode()
+}
 
-	opts.headers.ForEach(func(headerKey, headerVal string) (err error) {
+// Private func that will set the headers for a request, will not error
+func (r *Requester) setHeaders(req *http.Request, headers Headers) {
+	headers.ForEach(func(headerKey, headerVal string) (err error) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
 }
 
 // Get will make an HTTP GET Request
-func (r *Requester) Get(path string, opts *Opts) (resp *http.Response, err error) {
+func (r *Requester) Get(path string, opts ...Opt) (resp *http.Response, err error) {
 	return r.request(http.MethodGet, path, nil, opts)
 }
 
 // Put will make an HTTP Put Request
-func (r *Requester) Put(path string, body []byte, opts *Opts) (resp *http.Response, err error) {
+func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
 	return r.request(http.MethodPut, path, body, opts)
 }
 
 // Post will make an HTTP POST Request
-func (r *Requester) Post(path string, body []byte, opts *Opts) (resp *http.Response, err error) {
+func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
 	return r.request(http.MethodPost, path, body, opts)
 }
 
 // Delete will make an HTTP DELETE Request
-func (r *Requester) Delete(path string, opts *Opts) (resp *http.Response, err error) {
+func (r *Requester) Delete(path string, opts ...Opt) (resp *http.Response, err error) {
 	return r.request(http.MethodDelete, path, nil, opts)
 }

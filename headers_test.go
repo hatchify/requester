@@ -14,8 +14,8 @@ const (
 	xAPIKeyVal       = "Jenny_8675309"
 )
 
-func Test_NewHeadersMap(t *testing.T) {
-	headersMap := NewHeadersMap(
+func Test_NewHeaders(t *testing.T) {
+	headersMap := NewHeaders(
 		Header{Key: contentTypeKey, Val: contentTypeVal},
 		Header{Key: contentLengthKey, Val: contentLengthVal},
 		Header{Key: xAPIKeyKey, Val: xAPIKeyVal},
