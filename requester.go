@@ -39,14 +39,11 @@ func (r *Requester) request(method, path string, body []byte, opts Opts) (resp *
 		return
 	}
 
-	fmt.Printf("headers: %v\n\n", req.Header)
 	return r.hc.Do(req)
 }
 
 func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
-
 	for _, opt := range opts {
-		fmt.Printf("%T\n\n", opt)
 		switch t := opt.(type) {
 		case Query:
 			r.setQuery(req, t)
