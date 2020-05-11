@@ -1,26 +1,12 @@
 package requester
 
-import (
-	"net/http"
-	"net/url"
-)
+import "net/http"
 
-// NewOpts will return a new instance of RequestOpts
-func NewOpts(query url.Values, headers HeadersMap, modifiers ...Modifier) (op *Opts) {
-	var o Opts
-	o.query = query
-	o.headers = headers
-	o.modifiers = append(o.modifiers, modifiers...)
-	op = &o
-	return
-}
+// Opt represents an option entry for an http request
+type Opt interface{}
 
-// Opts represents optional parameters for an HTTP Request
-type Opts struct {
-	query     url.Values
-	headers   HeadersMap
-	modifiers []Modifier
-}
+// Opts reresents the options entry for an http request
+type Opts []Opt
 
 // Modifier is the  modifier func that will modify a request
-type Modifier func(r *http.Request) (err error)
+type Modifier func(*http.Request, *http.Client) error
