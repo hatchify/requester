@@ -26,7 +26,9 @@ func (q Query) Add(entries ...QueryParam) {
 // ForEach will iterate through ALL entries in an instance of Query
 func (q Query) ForEach(fn func(key, val string) error) (err error) {
 	for key, val := range q {
-		fn(key, val)
+		if err = fn(key, val); err != nil {
+			return
+		}
 	}
 
 	return

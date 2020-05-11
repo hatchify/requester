@@ -22,7 +22,9 @@ func (h Headers) Add(entries ...Header) {
 // ForEach will iterate through ALL entries in an instance of Headers
 func (h Headers) ForEach(fn func(key, val string) error) (err error) {
 	for key, val := range h {
-		fn(key, val)
+		if err = fn(key, val); err != nil {
+			return
+		}
 	}
 
 	return
