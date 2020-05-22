@@ -82,6 +82,11 @@ func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Respo
 	return r.request(http.MethodPut, path, body, opts)
 }
 
+// Patch will make an HTTP Patch Request
+func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.request(http.MethodPatch, path, body, opts)
+}
+
 // Post will make an HTTP POST Request
 func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
 	return r.request(http.MethodPost, path, body, opts)
