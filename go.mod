@@ -1,3 +1,3 @@
-module github.com/Hatch1fy/requester
+module github.com/hatchify/requester
 
 go 1.14
