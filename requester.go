@@ -7,6 +7,21 @@ import (
 	"net/url"
 )
 
+// Interface needs to implement all needed Requester methods
+type Interface interface {
+	Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error)
+
+	Get(path string, opts ...Opt) (resp *http.Response, err error)
+	Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
+	Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
+	Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
+	Delete(path string, opts ...Opt) (resp *http.Response, err error)
+
+	setOpts(req *http.Request, opts Opts) (err error)
+	setHeaders(req *http.Request, headers Headers)
+	setQuery(req *http.Request, query Query)
+}
+
 // New will create a new instance of Requester
 func New(hc *http.Client, baseURL string) (rp *Requester) {
 	var r Requester
@@ -23,13 +38,12 @@ type Requester struct {
 	baseURL string
 }
 
-// Private func that handles making http requests
+// Request func that handles making http requests
 func (r *Requester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 	var u *url.URL
 	if u, err = getURL(r.baseURL, path); err != nil {
 		return
 	}
-
 	var req *http.Request
 	if req, err = http.NewRequest(method, u.String(), bytes.NewReader(body)); err != nil {
 		return
@@ -77,6 +91,11 @@ func (r *Requester) Get(path string, opts ...Opt) (resp *http.Response, err erro
 	return r.Request(http.MethodGet, path, nil, opts)
 }
 
+// Post will make an HTTP POST Request
+func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPost, path, body, opts)
+}
+
 // Put will make an HTTP Put Request
 func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
 	return r.Request(http.MethodPut, path, body, opts)
@@ -85,11 +104,6 @@ func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Respo
 // Patch will make an HTTP Patch Request
 func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
 	return r.Request(http.MethodPatch, path, body, opts)
-}
-
-// Post will make an HTTP POST Request
-func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodPost, path, body, opts)
 }
 
 // Delete will make an HTTP DELETE Request
