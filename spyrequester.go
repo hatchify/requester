@@ -1,16 +1,18 @@
 package requester
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
-	"os"
 )
 
 // SpyRequester implements mock requester struct
 type SpyRequester struct {
-	baseURL string
-	hc		*http.Client
-	store   RequesterStore
+	baseURL 		string
+	hc				*http.Client
+	store   		RequesterStore
+	regRequester	*Requester
 }
 
 // NewMock create an instance of mock requester
@@ -19,6 +21,7 @@ func NewSpy(hc *http.Client, baseURL string, store RequesterStore) (rp *SpyReque
 	r.hc = hc
 	r.baseURL = baseURL
 	r.store = store
+	r.regRequester = New(&http.Client{}, baseURL)
 	rp = &r
 	return
 }
@@ -26,9 +29,18 @@ func NewSpy(hc *http.Client, baseURL string, store RequesterStore) (rp *SpyReque
 // Request func that handles making http requests
 func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 
+	//Our request parameters
 	fmt.Println(method, path, body)
-	fmt.Printf("%+v\n", opts[0])
-	os.Exit(0)
+
+	//Logic from regular requester runs here
+	resp, err = r.regRequester.Request(method, path, body, opts)
+
+	//We are going to take the body and put it back to make it look like nothing ever happened
+	var respBody []byte
+	respBody, _ = ioutil.ReadAll(resp.Body)
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
+
+	fmt.Println(string(respBody))
 
 	return
 }
