@@ -26,23 +26,48 @@ func NewSpy(hc *http.Client, baseURL string, store RequesterStore) (rp *SpyReque
 	return
 }
 
+
 // Request func that handles making http requests
 func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 
+	var reqSample RequestSample
+	var resSample ResponseSample
+
 	//Our request parameters
-	fmt.Println(method, path, body)
+	//fmt.Println(method, path, body)
+
+	//Let's save that request
+	reqSample = RequestSample{method, path, string(body)}
 
 	//Logic from regular requester runs here
 	resp, err = r.regRequester.Request(method, path, body, opts)
 
 	//We are going to take the body and put it back to make it look like nothing ever happened
-	var respBody []byte
-	respBody, _ = ioutil.ReadAll(resp.Body)
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
+	tempBody, _ := ioutil.ReadAll(resp.Body)
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(tempBody))
 
-	fmt.Println(string(respBody))
+	//Our body
+	//fmt.Println(string(tempBody))
+	resSample = ResponseSample{resp.StatusCode, string(tempBody)}
 
-	return
+	//Let's save our request to db
+	r.store.Set(reqSample, resSample)
+
+	fmt.Println("so we saved our samples")
+
+	//fmt.Println(r.store.GetAll())
+
+	//So let's try mocking stuff by using only data in our db
+	sample, _ := r.store.Get(reqSample)
+
+	return &http.Response{
+		StatusCode: sample.StatusCode,
+		Body:       ioutil.NopCloser(bytes.NewBuffer([]byte(sample.Body))),
+	}, nil
+	
+	//fmt.Printf("%+v\n", sample)
+	//os.Exit(0)
+	//return
 }
 
 func (r *SpyRequester) setOpts(req *http.Request, opts Opts) (err error) {
