@@ -53,6 +53,8 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (res
 	//Let's save our request to db
 	r.store.Set(reqSample, resSample)
 
+	r.store.Save() //Let's save our request :)
+
 	fmt.Println("so we saved our samples")
 
 	//fmt.Println(r.store.GetAll())

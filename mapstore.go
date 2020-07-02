@@ -1,5 +1,7 @@
 package requester
 
+import "fmt"
+
 // MapStore
 type MapStore struct {
 	data map[RequestSample]ResponseSample
@@ -11,7 +13,7 @@ func NewMapStore() (s *MapStore){
 	return
 }
 
-func (m *MapStore) GetAll() *MapStore {
+func (m *MapStore) GetAll() interface{} {
 	return m
 }
 
@@ -31,3 +33,6 @@ func (m *MapStore) Set(request RequestSample, response ResponseSample) {
 	m.data[request] = response
 }
 
+func (m *MapStore) Save() {
+	fmt.Println("nice try")
+}

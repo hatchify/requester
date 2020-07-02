@@ -4,7 +4,8 @@ package requester
 type RequesterStore interface {
 	Get(request RequestSample) (response ResponseSample, err error)
 	Set(request RequestSample, response ResponseSample)
-	GetAll() *MapStore
+	GetAll() interface{}
+	Save()
 }
 
 type RequestSample struct {
