@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -22,13 +23,12 @@ type JsonFlatRecord struct {
 type JsonFlatStore []JsonFlatRecord
 
 // NewJsonFileStore creates a new store
-func NewJsonFileStore(path string) (s *JsonFileStore){
+func NewJsonFileStore(path string) (s *JsonFileStore) {
 	var jsonFile *os.File
 	var err error
 
 	if jsonFile, err = os.Open(path); err != nil {
-		//TODO: implement errors
-		fmt.Println("implement errors")
+		log.Fatal(err)
 	}
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)

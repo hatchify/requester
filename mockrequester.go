@@ -1,19 +1,21 @@
 package requester
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
 // MockRequester implements mock requester struct
 type MockRequester struct {
 	baseURL string
-	hc		*http.Client
-	store   RequesterStore
+	hc      *http.Client
+	store   Store
 }
 
 // NewMock create an instance of mock requester
-func NewMock(hc *http.Client, baseURL string, store RequesterStore) (rp *MockRequester) {
+func NewMock(hc *http.Client, baseURL string, store Store) (rp *MockRequester) {
 	var r MockRequester
 	r.hc = hc
 	r.baseURL = baseURL
@@ -25,10 +27,19 @@ func NewMock(hc *http.Client, baseURL string, store RequesterStore) (rp *MockReq
 // Request func that handles making http requests
 func (r *MockRequester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 	//Implement the sauce
+	var reqSample RequestSample
+	var resSample ResponseSample
 
-	//resp, err = r.store.Get(requestVars)
+	//Let's save that request
+	reqSample = RequestSample{method, path, string(body)}
 
-	return
+	//So let's try mocking stuff by using only data in our db
+	resSample, _ = r.store.Get(reqSample)
+
+	return &http.Response{
+		StatusCode: resSample.StatusCode,
+		Body:       ioutil.NopCloser(bytes.NewBuffer([]byte(resSample.Body))),
+	}, nil
 }
 
 func (r *MockRequester) setOpts(req *http.Request, opts Opts) (err error) {

@@ -1,7 +1,7 @@
 package requester
 
-// RequesterStore implements storage for requests
-type RequesterStore interface {
+// Store implements storage for requests
+type Store interface {
 	Get(request RequestSample) (response ResponseSample, err error)
 	Set(request RequestSample, response ResponseSample)
 	GetAll() interface{}

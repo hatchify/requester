@@ -9,14 +9,14 @@ import (
 
 // SpyRequester implements mock requester struct
 type SpyRequester struct {
-	baseURL 		string
-	hc				*http.Client
-	store   		RequesterStore
-	regRequester	*Requester
+	baseURL      string
+	hc           *http.Client
+	store        Store
+	regRequester *Requester
 }
 
 // NewMock create an instance of mock requester
-func NewSpy(hc *http.Client, baseURL string, store RequesterStore) (rp *SpyRequester) {
+func NewSpy(hc *http.Client, baseURL string, store Store) (rp *SpyRequester) {
 	var r SpyRequester
 	r.hc = hc
 	r.baseURL = baseURL
@@ -33,9 +33,6 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (res
 	var reqSample RequestSample
 	var resSample ResponseSample
 
-	//Our request parameters
-	//fmt.Println(method, path, body)
-
 	//Let's save that request
 	reqSample = RequestSample{method, path, string(body)}
 
@@ -46,30 +43,24 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (res
 	tempBody, _ := ioutil.ReadAll(resp.Body)
 	resp.Body = ioutil.NopCloser(bytes.NewBuffer(tempBody))
 
-	//Our body
-	//fmt.Println(string(tempBody))
+	//Forming our ResponseSample
 	resSample = ResponseSample{resp.StatusCode, string(tempBody)}
 
 	//Let's save our request to db
 	r.store.Set(reqSample, resSample)
 
-	r.store.Save() //Let's save our request :)
+	r.store.Save() //Let's save our db :)
 
-	fmt.Println("so we saved our samples")
-
-	//fmt.Println(r.store.GetAll())
-
-	//So let's try mocking stuff by using only data in our db
-	sample, _ := r.store.Get(reqSample)
+	//Debugging data
+	//Our request parameters
+	fmt.Println(method, path, body)
+	fmt.Println(string(tempBody))
+	fmt.Println("---Saved---")
 
 	return &http.Response{
-		StatusCode: sample.StatusCode,
-		Body:       ioutil.NopCloser(bytes.NewBuffer([]byte(sample.Body))),
+		StatusCode: resSample.StatusCode,
+		Body:       ioutil.NopCloser(bytes.NewBuffer([]byte(resSample.Body))),
 	}, nil
-	
-	//fmt.Printf("%+v\n", sample)
-	//os.Exit(0)
-	//return
 }
 
 func (r *SpyRequester) setOpts(req *http.Request, opts Opts) (err error) {
