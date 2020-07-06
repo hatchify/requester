@@ -26,7 +26,6 @@ func NewSpy(hc *http.Client, baseURL string, store Store) (rp *SpyRequester) {
 	return
 }
 
-
 // Request func that handles making http requests
 func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 
@@ -71,6 +70,7 @@ func (r *SpyRequester) setOpts(req *http.Request, opts Opts) (err error) {
 			r.setHeaders(req, t)
 		case Modifier:
 			err = t(req, r.hc)
+
 		default:
 			err = fmt.Errorf("invalid opts type: expected \"Query\", \"Headers\", or \"Modifier\", received \"%T\"", opt)
 		}

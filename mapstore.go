@@ -8,7 +8,7 @@ type MapStore struct {
 }
 
 // NewMapStore creates a new store
-func NewMapStore() (s *MapStore){
+func NewMapStore() (s *MapStore) {
 	s = &MapStore{make(map[RequestSample]ResponseSample)}
 	return
 }

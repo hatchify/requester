@@ -15,7 +15,6 @@ type RequestSample struct {
 }
 
 type ResponseSample struct {
-	StatusCode 	int		`json:"status_code"`
-	Body 		string 	`json:"response_body"`
+	StatusCode int    `json:"status_code"`
+	Body       string `json:"response_body"`
 }
-

@@ -59,6 +59,7 @@ func (r *MockRequester) setOpts(req *http.Request, opts Opts) (err error) {
 			r.setHeaders(req, t)
 		case Modifier:
 			err = t(req, r.hc)
+
 		default:
 			err = fmt.Errorf("invalid opts type: expected \"Query\", \"Headers\", or \"Modifier\", received \"%T\"", opt)
 		}

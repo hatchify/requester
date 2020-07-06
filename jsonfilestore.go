@@ -73,12 +73,11 @@ func (m *JsonFileStore) Save() {
 	for request, response := range m.data {
 		jsonStore = append(jsonStore,
 			JsonFlatRecord{
-			Request:  request,
-			Response: response,
-		})
+				Request:  request,
+				Response: response,
+			})
 	}
 
 	byteValue, _ := json.MarshalIndent(jsonStore, "", " ") //TODO: MarshallIndent is just for me
 	_ = ioutil.WriteFile(m.path, byteValue, 0644)
 }
-
