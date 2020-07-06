@@ -27,19 +27,27 @@ func NewMock(hc *http.Client, baseURL string, store Store) (rp *MockRequester) {
 // Request func that handles making http requests
 func (r *MockRequester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 	//Implement the sauce
-	var reqSample RequestSample
-	var resSample ResponseSample
+	var (
+		reqSample RequestSample
+		resSample ResponseSample
+	)
 
 	//Let's save that request
 	reqSample = RequestSample{method, path, string(body)}
 
 	//So let's try mocking stuff by using only data in our db
-	resSample, _ = r.store.Get(reqSample)
+	if resSample, err = r.store.Get(reqSample); err != nil {
+		resSample = ResponseSample{
+			StatusCode: 404,
+			Body:       err.Error(),
+		}
+	}
 
-	return &http.Response{
+	resp = &http.Response{
 		StatusCode: resSample.StatusCode,
 		Body:       ioutil.NopCloser(bytes.NewBuffer([]byte(resSample.Body))),
-	}, nil
+	}
+	return
 }
 
 func (r *MockRequester) setOpts(req *http.Request, opts Opts) (err error) {

@@ -23,7 +23,7 @@ func (m *MapStore) Get(request RequestSample) (response ResponseSample, err erro
 	var ok bool
 
 	if response, ok = m.data[request]; !ok {
-		err = nil
+		err = fmt.Errorf("request does not exist in MapStore")
 	}
 	return
 }

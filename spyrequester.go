@@ -30,8 +30,10 @@ func NewSpy(hc *http.Client, baseURL string, store Store) (rp *SpyRequester) {
 // Request func that handles making http requests
 func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 
-	var reqSample RequestSample
-	var resSample ResponseSample
+	var (
+		reqSample RequestSample
+		resSample ResponseSample
+	)
 
 	//Let's save that request
 	reqSample = RequestSample{method, path, string(body)}
@@ -57,10 +59,7 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (res
 	fmt.Println(string(tempBody))
 	fmt.Println("---Saved---")
 
-	return &http.Response{
-		StatusCode: resSample.StatusCode,
-		Body:       ioutil.NopCloser(bytes.NewBuffer([]byte(resSample.Body))),
-	}, nil
+	return
 }
 
 func (r *SpyRequester) setOpts(req *http.Request, opts Opts) (err error) {
