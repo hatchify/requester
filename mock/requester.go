@@ -1,7 +1,7 @@
 package mock
 
 /**
-Requester simulates a regular Requester using provided data from the backing Store that holds all the requests
+Requester simulates a regular Requester using provided data from the Backend that holds all the requests
 */
 
 import (
@@ -13,13 +13,12 @@ import (
 )
 
 // NewRequester create an instance of mock requester
-func NewRequester(hc *http.Client, baseURL string, be Backend) (rp *Requester, err error) {
+func NewRequester(baseURL string, be Backend) (rp *Requester, err error) {
 	var r Requester
 	if r.store, err = NewStore(be); err != nil {
 		return
 	}
 
-	r.hc = hc
 	r.baseURL = baseURL
 	rp = &r
 	return
@@ -28,7 +27,6 @@ func NewRequester(hc *http.Client, baseURL string, be Backend) (rp *Requester, e
 // Requester implements mock requester struct
 type Requester struct {
 	baseURL string
-	hc      *http.Client
 	store   *Store
 }
 

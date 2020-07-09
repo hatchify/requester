@@ -36,7 +36,7 @@ func (m *FileBackend) Load() (s StoreData, err error) {
 }
 
 // Save will persist the data to disk
-func (m *FileBackend) Save(s *Store) (err error) {
+func (m *FileBackend) Save(s StoreData) (err error) {
 	var f *os.File
 	if f, err = os.OpenFile(m.path, os.O_RDWR, 0744); err != nil {
 		err = fmt.Errorf("error opening backend FileBackend: %v", err)
@@ -51,7 +51,7 @@ func (m *FileBackend) Save(s *Store) (err error) {
 	}
 
 	// Create flat store from store data
-	fs := s.data.NewFlatRecords()
+	fs := s.NewFlatRecords()
 
 	// Encode flat store as JSON to disk
 	return json.NewEncoder(f).Encode(fs)

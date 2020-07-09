@@ -7,7 +7,7 @@ func NewMapBackend() (fp *MapBackend) {
 	return
 }
 
-// MapBackend is a file-based backend
+// MapBackend is a map struct backend
 type MapBackend struct{}
 
 // Load will load
@@ -16,7 +16,7 @@ func (m *MapBackend) Load() (s StoreData, err error) {
 	return
 }
 
-// Save will persist the data to disk
-func (m *MapBackend) Save(s *Store) (err error) {
+// Save will not persist data
+func (m *MapBackend) Save(s StoreData) (err error) {
 	return
 }
