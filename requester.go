@@ -16,10 +16,6 @@ type Interface interface {
 	Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
 	Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
 	Delete(path string, opts ...Opt) (resp *http.Response, err error)
-
-	setOpts(req *http.Request, opts Opts) (err error)
-	setHeaders(req *http.Request, headers Headers)
-	setQuery(req *http.Request, query Query)
 }
 
 // New will create a new instance of Requester

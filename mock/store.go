@@ -1,4 +1,4 @@
-package requester
+package mock
 
 // Store implements storage for requests
 type Store interface {
