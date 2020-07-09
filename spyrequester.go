@@ -63,6 +63,7 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (res
 	return
 }
 
+//TODO: Implement this - so that we would store all the options in our RequestSample
 func (r *SpyRequester) setOpts(req *http.Request, opts Opts) (err error) {
 	for _, opt := range opts {
 		switch t := opt.(type) {

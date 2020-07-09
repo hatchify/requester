@@ -53,7 +53,7 @@ func (r *MockRequester) Request(method, path string, body []byte, opts Opts) (re
 	}
 	return
 }
-
+//TODO: Implement this - so that we would store all the options in our RequestSample
 func (r *MockRequester) setOpts(req *http.Request, opts Opts) (err error) {
 	for _, opt := range opts {
 		switch t := opt.(type) {
