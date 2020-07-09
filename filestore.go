@@ -11,7 +11,6 @@ import (
 // FileStore
 type FileStore struct {
 	data map[RequestSample]ResponseSample
-	file *os.File
 	path string
 }
 
@@ -22,12 +21,20 @@ type FlatRecord struct {
 
 type FlatStore []FlatRecord
 
+func NewFileStore(path string) (f *FileStore) {
+	f = &FileStore{
+		data: make(map[RequestSample]ResponseSample),
+		path: path,
+	}
+	return f
+}
+
 // NewFileStore creates a new store
-func NewFileStore(path string) (s *FileStore) {
+func (m *FileStore) Load() {
 	var jsonFile *os.File
 	var err error
 
-	if jsonFile, err = os.Open(path); err != nil {
+	if jsonFile, err = os.Open(m.path); err != nil {
 		log.Fatal(err)
 	}
 
@@ -37,14 +44,9 @@ func NewFileStore(path string) (s *FileStore) {
 		fmt.Println("couldn't parse the file")
 	}
 
-	var data = make(map[RequestSample]ResponseSample)
-
 	for _, v := range flatStore {
-		data[v.Request] = v.Response
+		m.data[v.Request] = v.Response
 	}
-
-	s = &FileStore{data, jsonFile, path}
-	return
 }
 
 func (m *FileStore) GetAll() interface{} {
@@ -68,8 +70,7 @@ func (m *FileStore) Set(request RequestSample, response ResponseSample) {
 }
 
 func (m *FileStore) Save() {
-	var jsonStore = FlatStore{}
-
+	jsonStore := make(FlatStore, 0, len(m.data))
 	for request, response := range m.data {
 		jsonStore = append(jsonStore,
 			FlatRecord{
