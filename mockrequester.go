@@ -53,6 +53,7 @@ func (r *MockRequester) Request(method, path string, body []byte, opts Opts) (re
 	}
 	return
 }
+
 //TODO: Implement this - so that we would store all the options in our RequestSample
 func (r *MockRequester) setOpts(req *http.Request, opts Opts) (err error) {
 	for _, opt := range opts {
@@ -79,7 +80,7 @@ func (r *MockRequester) setQuery(req *http.Request, query Query) {
 
 // Private func that will set the headers for a request, will not error
 func (r *MockRequester) setHeaders(req *http.Request, headers Headers) {
-	headers.ForEach(func(headerKey, headerVal string) (err error) {
+	_ = headers.ForEach(func(headerKey, headerVal string) (err error) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})

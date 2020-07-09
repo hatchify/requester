@@ -8,22 +8,22 @@ import (
 	"os"
 )
 
-// JsonFileStore
-type JsonFileStore struct {
+// FileStore
+type FileStore struct {
 	data map[RequestSample]ResponseSample
 	file *os.File
 	path string
 }
 
-type JsonFlatRecord struct {
+type FlatRecord struct {
 	Request  RequestSample  `json:"request"`
 	Response ResponseSample `json:"response"`
 }
 
-type JsonFlatStore []JsonFlatRecord
+type FlatStore []FlatRecord
 
-// NewJsonFileStore creates a new store
-func NewJsonFileStore(path string) (s *JsonFileStore) {
+// NewFileStore creates a new store
+func NewFileStore(path string) (s *FileStore) {
 	var jsonFile *os.File
 	var err error
 
@@ -32,7 +32,7 @@ func NewJsonFileStore(path string) (s *JsonFileStore) {
 	}
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	var flatStore = JsonFlatStore{}
+	var flatStore = FlatStore{}
 	if err := json.Unmarshal(byteValue, &flatStore); err != nil {
 		fmt.Println("couldn't parse the file")
 	}
@@ -43,36 +43,36 @@ func NewJsonFileStore(path string) (s *JsonFileStore) {
 		data[v.Request] = v.Response
 	}
 
-	s = &JsonFileStore{data, jsonFile, path}
+	s = &FileStore{data, jsonFile, path}
 	return
 }
 
-func (m *JsonFileStore) GetAll() interface{} {
+func (m *FileStore) GetAll() interface{} {
 	return m
 }
 
 // Get gets data duuh
-func (m *JsonFileStore) Get(request RequestSample) (response ResponseSample, err error) {
+func (m *FileStore) Get(request RequestSample) (response ResponseSample, err error) {
 
 	var ok bool
 
 	if response, ok = m.data[request]; !ok {
-		err = fmt.Errorf("request does not exist in JsonFileStore")
+		err = fmt.Errorf("request does not exist in FileStore")
 	}
 	return
 }
 
 // Set saves data
-func (m *JsonFileStore) Set(request RequestSample, response ResponseSample) {
+func (m *FileStore) Set(request RequestSample, response ResponseSample) {
 	m.data[request] = response
 }
 
-func (m *JsonFileStore) Save() {
-	var jsonStore = JsonFlatStore{}
+func (m *FileStore) Save() {
+	var jsonStore = FlatStore{}
 
 	for request, response := range m.data {
 		jsonStore = append(jsonStore,
-			JsonFlatRecord{
+			FlatRecord{
 				Request:  request,
 				Response: response,
 			})

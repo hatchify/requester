@@ -80,7 +80,7 @@ func (r *Requester) setQuery(req *http.Request, query Query) {
 
 // Private func that will set the headers for a request, will not error
 func (r *Requester) setHeaders(req *http.Request, headers Headers) {
-	headers.ForEach(func(headerKey, headerVal string) (err error) {
+	_ = headers.ForEach(func(headerKey, headerVal string) (err error) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
