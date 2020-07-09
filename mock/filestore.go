@@ -8,6 +8,15 @@ import (
 	"os"
 )
 
+func NewFileStore(path string) (f *FileStore) {
+	f = &FileStore{
+		data: make(map[RequestSample]ResponseSample),
+		path: path,
+	}
+
+	return f
+}
+
 // FileStore
 type FileStore struct {
 	data map[RequestSample]ResponseSample
@@ -20,14 +29,6 @@ type FlatRecord struct {
 }
 
 type FlatStore []FlatRecord
-
-func NewFileStore(path string) (f *FileStore) {
-	f = &FileStore{
-		data: make(map[RequestSample]ResponseSample),
-		path: path,
-	}
-	return f
-}
 
 // NewFileStore creates a new store
 func (m *FileStore) Load() {
