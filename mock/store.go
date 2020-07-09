@@ -1,20 +1,41 @@
 package mock
 
-// Store implements storage for requests
-type Store interface {
-	Get(request RequestSample) (response ResponseSample, err error)
-	Set(request RequestSample, response ResponseSample)
-	GetAll() interface{}
-	Save()
+import "fmt"
+
+// NewStore creates a new store
+func NewStore(be Backend) (sp *Store, err error) {
+	var s Store
+	if s.data, err = be.Load(); err != nil {
+		return
+	}
+
+	s.be = be
+	sp = &s
+	return
 }
 
-type RequestSample struct {
-	Method string `json:"method"`
-	Path   string `json:"path"`
-	Body   string `json:"request_body"`
+// Store manages a set of mock requests
+type Store struct {
+	be   Backend
+	data StoreData
 }
 
-type ResponseSample struct {
-	StatusCode int    `json:"status_code"`
-	Body       string `json:"response_body"`
+// Get gets data duuh
+func (s *Store) Get(request RequestSample) (response ResponseSample, err error) {
+	var ok bool
+	if response, ok = s.data[request]; !ok {
+		err = fmt.Errorf("request does not exist in Store")
+	}
+
+	return
+}
+
+// Set saves data
+func (s *Store) Set(request RequestSample, response ResponseSample) {
+	s.data[request] = response
+}
+
+// Save will save
+func (s *Store) Save() (err error) {
+	return s.be.Save(s.data)
 }

@@ -12,16 +12,8 @@ import (
 	"github.com/hatchify/requester"
 )
 
-// SpyRequester implements mock requester struct
-type SpyRequester struct {
-	baseURL      string
-	hc           *http.Client
-	store        Store
-	regRequester *requester.Requester
-}
-
-// NewMock create an instance of mock requester
-func NewSpy(hc *http.Client, baseURL string, store Store) (rp *SpyRequester) {
+// NewSpyRequester create an instance of mock requester
+func NewSpyRequester(hc *http.Client, baseURL string, store Store) (rp *SpyRequester) {
 	var r SpyRequester
 	r.hc = hc
 	r.baseURL = baseURL
@@ -29,6 +21,14 @@ func NewSpy(hc *http.Client, baseURL string, store Store) (rp *SpyRequester) {
 	r.regRequester = requester.New(&http.Client{}, baseURL)
 	rp = &r
 	return
+}
+
+// SpyRequester implements mock requester struct
+type SpyRequester struct {
+	baseURL      string
+	hc           *http.Client
+	store        Store
+	regRequester *requester.Requester
 }
 
 // Request func that handles making http requests
