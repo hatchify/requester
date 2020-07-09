@@ -1,5 +1,7 @@
 package requester
-
+/**
+SpyRequester is a pass-thru to Requester and therefore behaves exactly the same, however it saves all the requests into the Store
+*/
 import (
 	"bytes"
 	"fmt"

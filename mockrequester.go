@@ -1,5 +1,9 @@
 package requester
 
+/**
+MockRequester simulates a regular Requester using provided data from the backing Store that holds all the requests
+*/
+
 import (
 	"bytes"
 	"fmt"
