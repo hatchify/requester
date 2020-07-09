@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -31,23 +30,22 @@ type FlatRecord struct {
 type FlatStore []FlatRecord
 
 // NewFileStore creates a new store
-func (m *FileStore) Load() {
+func (m *FileStore) Load() (err error) {
 	var jsonFile *os.File
-	var err error
-
 	if jsonFile, err = os.Open(m.path); err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	var flatStore = FlatStore{}
-	if err := json.Unmarshal(byteValue, &flatStore); err != nil {
-		fmt.Println("couldn't parse the file")
+	var flatStore FlatStore
+	if err = json.NewDecoder(jsonFile).Decode(&flatStore); err != nil {
+		return
 	}
 
 	for _, v := range flatStore {
 		m.data[v.Request] = v.Response
 	}
+
+	return
 }
 
 func (m *FileStore) GetAll() interface{} {
