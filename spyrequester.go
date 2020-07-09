@@ -54,7 +54,7 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts Opts) (res
 
 	//Debugging data
 	//Our request parameters
-	fmt.Println(method, path, body)
+	fmt.Println(method, path, string(body))
 	fmt.Println(string(tempBody))
 	fmt.Println("---Saved---")
 
