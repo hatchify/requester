@@ -4,11 +4,11 @@ package mock
 type RequestSample struct {
 	Method string `json:"method"`
 	Path   string `json:"path"`
-	Body   string `json:"request_body"`
+	Body   string `json:"body,omitempty"`
 }
 
 // ResponseSample represents a response sample
 type ResponseSample struct {
-	StatusCode int    `json:"status_code"`
-	Body       string `json:"response_body"`
+	StatusCode int    `json:"statusCode"`
+	Body       string `json:"body,omitempty"`
 }

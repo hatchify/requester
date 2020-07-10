@@ -43,7 +43,10 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts requester.
 	reqSample = RequestSample{method, path, string(body)}
 
 	//Logic from regular requester runs here
-	resp, err = r.regRequester.Request(method, path, body, opts)
+	if resp, err = r.regRequester.Request(method, path, body, opts); err != nil {
+		err = fmt.Errorf("request failed: method: %v, path: %v, with error: %v", method, path, err)
+		return
+	}
 
 	//We are going to take the body and put it back to make it look like nothing ever happened
 	tempBody, _ := ioutil.ReadAll(resp.Body)
@@ -55,7 +58,11 @@ func (r *SpyRequester) Request(method, path string, body []byte, opts requester.
 	//Let's save our request to db
 	r.store.Set(reqSample, resSample)
 
-	r.store.Save() //Let's save our db :)
+	//Let's save our db :)
+	if err = r.store.Save(); err != nil {
+		err = fmt.Errorf("error while saving our Store: %v", err)
+		return
+	}
 
 	//Debugging data
 	//Our request parameters

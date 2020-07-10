@@ -23,12 +23,23 @@ type FileBackend struct {
 func (m *FileBackend) Load() (b BackendData, err error) {
 	var jsonFileBackend *os.File
 	if jsonFileBackend, err = os.Open(m.path); err != nil {
+		err = fmt.Errorf("error opening json FileBackend: %v", err)
 		return
 	}
 
+	var stat os.FileInfo
+	if stat, err = jsonFileBackend.Stat(); err != nil {
+		err = fmt.Errorf("error can't stat json FileBackend: %v", err)
+	}
+
 	var flatRecords FlatRecords
-	if err = json.NewDecoder(jsonFileBackend).Decode(&flatRecords); err != nil {
-		return
+
+	//Avoids json decode errors on new files
+	if stat.Size() > 0 {
+		if err = json.NewDecoder(jsonFileBackend).Decode(&flatRecords); err != nil {
+			err = fmt.Errorf("error decoding json FileBackend: %v", err)
+			return
+		}
 	}
 
 	b = flatRecords.NewBackendData()
@@ -39,7 +50,7 @@ func (m *FileBackend) Load() (b BackendData, err error) {
 func (m *FileBackend) Save(b BackendData) (err error) {
 	var f *os.File
 	if f, err = os.OpenFile(m.path, os.O_RDWR, 0744); err != nil {
-		err = fmt.Errorf("error opening backend FileBackend: %v", err)
+		err = fmt.Errorf("error opening json for saving FileBackend: %v", err)
 		return
 	}
 	defer f.Close()
