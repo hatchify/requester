@@ -20,23 +20,23 @@ type FileBackend struct {
 }
 
 // Load will load
-func (m *FileBackend) Load() (s StoreData, err error) {
+func (m *FileBackend) Load() (b BackendData, err error) {
 	var jsonFileBackend *os.File
 	if jsonFileBackend, err = os.Open(m.path); err != nil {
 		return
 	}
 
-	var FlatRecords FlatRecords
-	if err = json.NewDecoder(jsonFileBackend).Decode(&FlatRecords); err != nil {
+	var flatRecords FlatRecords
+	if err = json.NewDecoder(jsonFileBackend).Decode(&flatRecords); err != nil {
 		return
 	}
 
-	s = FlatRecords.NewStoreData()
+	b = flatRecords.NewBackendData()
 	return
 }
 
 // Save will persist the data to disk
-func (m *FileBackend) Save(s StoreData) (err error) {
+func (m *FileBackend) Save(b BackendData) (err error) {
 	var f *os.File
 	if f, err = os.OpenFile(m.path, os.O_RDWR, 0744); err != nil {
 		err = fmt.Errorf("error opening backend FileBackend: %v", err)
@@ -51,7 +51,7 @@ func (m *FileBackend) Save(s StoreData) (err error) {
 	}
 
 	// Create flat store from store data
-	fs := s.NewFlatRecords()
+	fs := b.NewFlatRecords()
 
 	// Encode flat store as JSON to disk
 	return json.NewEncoder(f).Encode(fs)

@@ -5,11 +5,11 @@ import "fmt"
 // NewStore creates a new store
 func NewStore(be Backend) (sp *Store, err error) {
 	var s Store
-	if s.data, err = be.Load(); err != nil {
+	s.be = be
+	if s.data, err = s.be.Load(); err != nil {
 		return
 	}
 
-	s.be = be
 	sp = &s
 	return
 }
@@ -17,7 +17,7 @@ func NewStore(be Backend) (sp *Store, err error) {
 // Store manages a set of mock requests
 type Store struct {
 	be   Backend
-	data StoreData
+	data BackendData
 }
 
 // Get gets data duuh

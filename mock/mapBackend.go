@@ -11,12 +11,12 @@ func NewMapBackend() (fp *MapBackend) {
 type MapBackend struct{}
 
 // Load will load
-func (m *MapBackend) Load() (s StoreData, err error) {
-	s = make(StoreData)
+func (m *MapBackend) Load() (s BackendData, err error) {
+	s = make(BackendData)
 	return
 }
 
 // Save will not persist data
-func (m *MapBackend) Save(s StoreData) (err error) {
+func (m *MapBackend) Save(s BackendData) (err error) {
 	return
 }

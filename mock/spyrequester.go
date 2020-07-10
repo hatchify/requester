@@ -13,11 +13,12 @@ import (
 )
 
 // NewSpyRequester create an instance of mock requester
-func NewSpyRequester(hc *http.Client, baseURL string, store Store) (rp *SpyRequester) {
+func NewSpyRequester(baseURL string, be Backend) (rp *SpyRequester, err error) {
 	var r SpyRequester
-	r.hc = hc
 	r.baseURL = baseURL
-	r.store = store
+	if r.store, err = NewStore(be); err != nil {
+		return
+	}
 	r.regRequester = requester.New(&http.Client{}, baseURL)
 	rp = &r
 	return
@@ -26,8 +27,7 @@ func NewSpyRequester(hc *http.Client, baseURL string, store Store) (rp *SpyReque
 // SpyRequester implements mock requester struct
 type SpyRequester struct {
 	baseURL      string
-	hc           *http.Client
-	store        Store
+	store        *Store
 	regRequester *requester.Requester
 }
 
