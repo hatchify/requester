@@ -19,8 +19,6 @@ func (q Query) Add(entries ...QueryParam) {
 	for _, query := range entries {
 		q[query.Key] = query.Val
 	}
-
-	return
 }
 
 // ForEach will iterate through ALL entries in an instance of Query
@@ -37,7 +35,7 @@ func (q Query) ForEach(fn func(key, val string) error) (err error) {
 // Encode will encode the query
 func (q Query) Encode() string {
 	var query = url.Values{}
-	q.ForEach(func(key, val string) (err error) {
+	_ = q.ForEach(func(key, val string) (err error) {
 		query.Add(key, val)
 		return
 	})

@@ -7,6 +7,17 @@ import (
 	"net/url"
 )
 
+// Interface needs to implement all needed Requester methods
+type Interface interface {
+	Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error)
+
+	Get(path string, opts ...Opt) (resp *http.Response, err error)
+	Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
+	Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
+	Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
+	Delete(path string, opts ...Opt) (resp *http.Response, err error)
+}
+
 // New will create a new instance of Requester
 func New(hc *http.Client, baseURL string) (rp *Requester) {
 	var r Requester
@@ -23,13 +34,12 @@ type Requester struct {
 	baseURL string
 }
 
-// Private func that handles making http requests
-func (r *Requester) request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
+// Request func that handles making http requests
+func (r *Requester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 	var u *url.URL
 	if u, err = getURL(r.baseURL, path); err != nil {
 		return
 	}
-
 	var req *http.Request
 	if req, err = http.NewRequest(method, u.String(), bytes.NewReader(body)); err != nil {
 		return
@@ -66,7 +76,7 @@ func (r *Requester) setQuery(req *http.Request, query Query) {
 
 // Private func that will set the headers for a request, will not error
 func (r *Requester) setHeaders(req *http.Request, headers Headers) {
-	headers.ForEach(func(headerKey, headerVal string) (err error) {
+	_ = headers.ForEach(func(headerKey, headerVal string) (err error) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
@@ -74,25 +84,25 @@ func (r *Requester) setHeaders(req *http.Request, headers Headers) {
 
 // Get will make an HTTP GET Request
 func (r *Requester) Get(path string, opts ...Opt) (resp *http.Response, err error) {
-	return r.request(http.MethodGet, path, nil, opts)
-}
-
-// Put will make an HTTP Put Request
-func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.request(http.MethodPut, path, body, opts)
-}
-
-// Patch will make an HTTP Patch Request
-func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.request(http.MethodPatch, path, body, opts)
+	return r.Request(http.MethodGet, path, nil, opts)
 }
 
 // Post will make an HTTP POST Request
 func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.request(http.MethodPost, path, body, opts)
+	return r.Request(http.MethodPost, path, body, opts)
+}
+
+// Put will make an HTTP Put Request
+func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPut, path, body, opts)
+}
+
+// Patch will make an HTTP Patch Request
+func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPatch, path, body, opts)
 }
 
 // Delete will make an HTTP DELETE Request
 func (r *Requester) Delete(path string, opts ...Opt) (resp *http.Response, err error) {
-	return r.request(http.MethodDelete, path, nil, opts)
+	return r.Request(http.MethodDelete, path, nil, opts)
 }

@@ -15,8 +15,6 @@ func (h Headers) Add(entries ...Header) {
 	for _, header := range entries {
 		h[header.Key] = header.Val
 	}
-
-	return
 }
 
 // ForEach will iterate through ALL entries in an instance of Headers
