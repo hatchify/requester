@@ -41,6 +41,31 @@ func (r *Requester) Request(method, path string, body []byte, opts Opts) (resp *
 	return r.hc.Do(req)
 }
 
+// Get will make an HTTP GET Request
+func (r *Requester) Get(path string, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodGet, path, nil, opts)
+}
+
+// Post will make an HTTP POST Request
+func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPost, path, body, opts)
+}
+
+// Put will make an HTTP Put Request
+func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPut, path, body, opts)
+}
+
+// Patch will make an HTTP Patch Request
+func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPatch, path, body, opts)
+}
+
+// Delete will make an HTTP DELETE Request
+func (r *Requester) Delete(path string, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodDelete, path, nil, opts)
+}
+
 func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 	for _, opt := range opts {
 		switch t := opt.(type) {
@@ -69,29 +94,4 @@ func (r *Requester) setHeaders(req *http.Request, headers Headers) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
-}
-
-// Get will make an HTTP GET Request
-func (r *Requester) Get(path string, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodGet, path, nil, opts)
-}
-
-// Post will make an HTTP POST Request
-func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodPost, path, body, opts)
-}
-
-// Put will make an HTTP Put Request
-func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodPut, path, body, opts)
-}
-
-// Patch will make an HTTP Patch Request
-func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodPatch, path, body, opts)
-}
-
-// Delete will make an HTTP DELETE Request
-func (r *Requester) Delete(path string, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodDelete, path, nil, opts)
 }
