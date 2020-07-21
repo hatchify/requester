@@ -2,21 +2,11 @@ package requester
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
 )
-
-// Interface needs to implement all needed Requester methods
-type Interface interface {
-	Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error)
-
-	Get(path string, opts ...Opt) (resp *http.Response, err error)
-	Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
-	Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
-	Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error)
-	Delete(path string, opts ...Opt) (resp *http.Response, err error)
-}
 
 // New will create a new instance of Requester
 func New(hc *http.Client, baseURL string) (rp *Requester) {
@@ -36,20 +26,92 @@ type Requester struct {
 
 // Request func that handles making http requests
 func (r *Requester) Request(method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
-	var u *url.URL
-	if u, err = getURL(r.baseURL, path); err != nil {
-		return
-	}
+	return r.RequestWithContext(context.Background(), method, path, body, opts)
+}
+
+// RequestWithContext func that handles making http requests with a given context
+func (r *Requester) RequestWithContext(ctx context.Context, method, path string, body []byte, opts Opts) (resp *http.Response, err error) {
 	var req *http.Request
-	if req, err = http.NewRequest(method, u.String(), bytes.NewReader(body)); err != nil {
+	// Create new request
+	if req, err = r.newRequest(ctx, method, path, body); err != nil {
 		return
 	}
 
+	// Set request options
 	if err = r.setOpts(req, opts); err != nil {
 		return
 	}
 
+	// Perform request using HTTP client
 	return r.hc.Do(req)
+}
+
+// Get will make an HTTP GET Request
+func (r *Requester) Get(path string, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodGet, path, nil, opts)
+}
+
+// GetWithContext will make an HTTP GET Request with a given context
+func (r *Requester) GetWithContext(ctx context.Context, path string, opts ...Opt) (resp *http.Response, err error) {
+	return r.RequestWithContext(ctx, http.MethodGet, path, nil, opts)
+}
+
+// Post will make an HTTP POST Request
+func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPost, path, body, opts)
+}
+
+// PostWithContext will make an HTTP POST Request with a given context
+func (r *Requester) PostWithContext(ctx context.Context, path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.RequestWithContext(ctx, http.MethodPost, path, body, opts)
+}
+
+// Put will make an HTTP Put Request
+func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPut, path, body, opts)
+}
+
+// PutWithContext will make an HTTP Put Request with a given context
+func (r *Requester) PutWithContext(ctx context.Context, path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.RequestWithContext(ctx, http.MethodPut, path, body, opts)
+}
+
+// Patch will make an HTTP Patch Request
+func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodPatch, path, body, opts)
+}
+
+// PatchWithContext will make an HTTP Patch Request with a given context
+func (r *Requester) PatchWithContext(ctx context.Context, path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
+	return r.RequestWithContext(ctx, http.MethodPatch, path, body, opts)
+}
+
+// Delete will make an HTTP DELETE Request
+func (r *Requester) Delete(path string, opts ...Opt) (resp *http.Response, err error) {
+	return r.Request(http.MethodDelete, path, nil, opts)
+}
+
+// DeleteWithContext will make an HTTP DELETE Request with a given context
+func (r *Requester) DeleteWithContext(ctx context.Context, path string, opts ...Opt) (resp *http.Response, err error) {
+	return r.RequestWithContext(ctx, http.MethodDelete, path, nil, opts)
+}
+
+// RequestWithContext func that handles making http requests with a given context
+func (r *Requester) newRequest(ctx context.Context, method, path string, body []byte) (req *http.Request, err error) {
+	var u *url.URL
+	// Get URL from base URL and provided path
+	if u, err = getURL(r.baseURL, path); err != nil {
+		return
+	}
+
+	// Create a new HTTP request
+	if req, err = http.NewRequest(method, u.String(), bytes.NewReader(body)); err != nil {
+		return
+	}
+
+	// Set context for request
+	req.WithContext(ctx)
+	return
 }
 
 func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
@@ -80,29 +142,4 @@ func (r *Requester) setHeaders(req *http.Request, headers Headers) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
-}
-
-// Get will make an HTTP GET Request
-func (r *Requester) Get(path string, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodGet, path, nil, opts)
-}
-
-// Post will make an HTTP POST Request
-func (r *Requester) Post(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodPost, path, body, opts)
-}
-
-// Put will make an HTTP Put Request
-func (r *Requester) Put(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodPut, path, body, opts)
-}
-
-// Patch will make an HTTP Patch Request
-func (r *Requester) Patch(path string, body []byte, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodPatch, path, body, opts)
-}
-
-// Delete will make an HTTP DELETE Request
-func (r *Requester) Delete(path string, opts ...Opt) (resp *http.Response, err error) {
-	return r.Request(http.MethodDelete, path, nil, opts)
 }
