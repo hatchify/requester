@@ -12,17 +12,17 @@ func NewQuery(entries ...QueryParam) (query Query) {
 }
 
 // Query is a key/val map representation of the query of an http request
-type Query map[string]string
+type Query map[string][]string
 
 // Add will add headers to the headers map
 func (q Query) Add(entries ...QueryParam) {
 	for _, query := range entries {
-		q[query.Key] = query.Val
+		q[query.Key] = append(q[query.Key], query.Val)
 	}
 }
 
 // ForEach will iterate through ALL entries in an instance of Query
-func (q Query) ForEach(fn func(key, val string) error) (err error) {
+func (q Query) ForEach(fn func(key string, val []string) error) (err error) {
 	for key, val := range q {
 		if err = fn(key, val); err != nil {
 			return
@@ -35,8 +35,10 @@ func (q Query) ForEach(fn func(key, val string) error) (err error) {
 // Encode will encode the query
 func (q Query) Encode() string {
 	var query = url.Values{}
-	_ = q.ForEach(func(key, val string) (err error) {
-		query.Add(key, val)
+	_ = q.ForEach(func(key string, val []string) (err error) {
+		for _, v := range val {
+			query.Add(key, v)
+		}
 		return
 	})
 
