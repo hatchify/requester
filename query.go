@@ -39,6 +39,7 @@ func (q Query) Encode() string {
 		for _, v := range val {
 			query.Add(key, v)
 		}
+
 		return
 	})
 
