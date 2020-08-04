@@ -126,7 +126,7 @@ func (r *Requester) newRequest(ctx context.Context, method, path string, body []
 
 func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 	if r.prepender != nil {
-		// Prepender exists, prepend prepender opts to opts list
+		// Prepender exists, prepend opts to opts list
 		opts = append(r.prepender(), opts...)
 	}
 
@@ -134,6 +134,8 @@ func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 		switch t := opt.(type) {
 		case Query:
 			r.setQuery(req, t)
+		case Header:
+			r.setHeader(req, opts, t)
 		case Headers:
 			r.setHeaders(req, t)
 		case Modifier:
@@ -149,6 +151,11 @@ func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 // Private func that will set the query pararms for a request
 func (r *Requester) setQuery(req *http.Request, query Query) {
 	req.URL.RawQuery = query.Encode()
+}
+
+// Private func that will set the headers for a request, will not error
+func (r *Requester) setHeader(req *http.Request, opts Opts, header Header) {
+	req.Header.Set(header.Key, header.Val)
 }
 
 // Private func that will set the headers for a request, will not error
