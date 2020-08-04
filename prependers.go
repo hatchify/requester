@@ -2,8 +2,8 @@ package requester
 
 import "fmt"
 
-// NewAuthBearerHook will return a new auth bearer hook func
-func NewAuthBearerHook(apiKey string) func() Opts {
+// NewAuthBearerPrepender will return a new auth bearer prepender func
+func NewAuthBearerPrepender(apiKey string) func() Opts {
 	// Set authorization header
 	authorization := Header{
 		Key: "Authorization",

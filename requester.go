@@ -23,8 +23,8 @@ type Requester struct {
 
 	baseURL string
 
-	// Hook is called before each request
-	hook func() Opts
+	// Prepender is called before each request
+	prepender func() Opts
 }
 
 // Request func that handles making http requests
@@ -99,11 +99,11 @@ func (r *Requester) DeleteWithContext(ctx context.Context, path string, opts ...
 	return r.RequestWithContext(ctx, http.MethodDelete, path, nil, opts)
 }
 
-// SetHook will set a hook function for the given instance of Requester
-// Note: The hook func allows for opts to be set for all requests. This
+// SetOptsPrepender will set an opts prepender function for the given instance of Requester
+// Note: The prepender func allows for opts to be set for all requests. This
 // can be quiet useful for things like Authorization tokens
-func (r *Requester) SetHook(hook func() Opts) {
-	r.hook = hook
+func (r *Requester) SetOptsPrepender(prepender func() Opts) {
+	r.prepender = prepender
 }
 
 // RequestWithContext func that handles making http requests with a given context
@@ -125,9 +125,9 @@ func (r *Requester) newRequest(ctx context.Context, method, path string, body []
 }
 
 func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
-	if r.hook != nil {
-		// Hook exists, prepend hook opts to opts list
-		opts = append(r.hook(), opts...)
+	if r.prepender != nil {
+		// Prepender exists, prepend prepender opts to opts list
+		opts = append(r.prepender(), opts...)
 	}
 
 	for _, opt := range opts {
