@@ -22,6 +22,9 @@ type Requester struct {
 	hc *http.Client
 
 	baseURL string
+
+	// Hook is called before each request
+	hook func() Opts
 }
 
 // Request func that handles making http requests
@@ -96,6 +99,13 @@ func (r *Requester) DeleteWithContext(ctx context.Context, path string, opts ...
 	return r.RequestWithContext(ctx, http.MethodDelete, path, nil, opts)
 }
 
+// SetHook will set a hook function for the given instance of Requester
+// Note: The hook func allows for opts to be set for all requests. This
+// can be quiet useful for things like Authorization tokens
+func (r *Requester) SetHook(hook func() Opts) {
+	r.hook = hook
+}
+
 // RequestWithContext func that handles making http requests with a given context
 func (r *Requester) newRequest(ctx context.Context, method, path string, body []byte) (req *http.Request, err error) {
 	var u *url.URL
@@ -115,6 +125,11 @@ func (r *Requester) newRequest(ctx context.Context, method, path string, body []
 }
 
 func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
+	if r.hook != nil {
+		// Hook exists, prepend hook opts to opts list
+		opts = append(r.hook(), opts...)
+	}
+
 	for _, opt := range opts {
 		switch t := opt.(type) {
 		case Query:
