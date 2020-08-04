@@ -22,6 +22,9 @@ type Requester struct {
 	hc *http.Client
 
 	baseURL string
+
+	// Prepender is called before each request
+	prepender func() Opts
 }
 
 // Request func that handles making http requests
@@ -96,6 +99,13 @@ func (r *Requester) DeleteWithContext(ctx context.Context, path string, opts ...
 	return r.RequestWithContext(ctx, http.MethodDelete, path, nil, opts)
 }
 
+// SetOptsPrepender will set an opts prepender function for the given instance of Requester
+// Note: The prepender func allows for opts to be set for all requests. This
+// can be quiet useful for things like Authorization tokens
+func (r *Requester) SetOptsPrepender(prepender func() Opts) {
+	r.prepender = prepender
+}
+
 // RequestWithContext func that handles making http requests with a given context
 func (r *Requester) newRequest(ctx context.Context, method, path string, body []byte) (req *http.Request, err error) {
 	var u *url.URL
@@ -115,10 +125,17 @@ func (r *Requester) newRequest(ctx context.Context, method, path string, body []
 }
 
 func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
+	if r.prepender != nil {
+		// Prepender exists, prepend opts to opts list
+		opts = append(r.prepender(), opts...)
+	}
+
 	for _, opt := range opts {
 		switch t := opt.(type) {
 		case Query:
 			r.setQuery(req, t)
+		case Header:
+			r.setHeader(req, opts, t)
 		case Headers:
 			r.setHeaders(req, t)
 		case Modifier:
@@ -134,6 +151,11 @@ func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 // Private func that will set the query pararms for a request
 func (r *Requester) setQuery(req *http.Request, query Query) {
 	req.URL.RawQuery = query.Encode()
+}
+
+// Private func that will set the headers for a request, will not error
+func (r *Requester) setHeader(req *http.Request, opts Opts, header Header) {
+	req.Header.Set(header.Key, header.Val)
 }
 
 // Private func that will set the headers for a request, will not error
