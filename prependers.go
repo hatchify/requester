@@ -11,10 +11,7 @@ func NewAuthBearerPrepender(apiKey string) func() Opts {
 	}
 
 	return func() (o Opts) {
-		// Create new headers using authorization header
-		headers := NewHeaders(authorization)
-
-		// Return options with headers
-		return append(o, headers)
+		// Return options with authorization headers
+		return append(o, authorization)
 	}
 }
