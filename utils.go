@@ -10,3 +10,7 @@ func getURL(baseURL, path string) (u *url.URL, err error) {
 	u.Path = path
 	return
 }
+
+func addKV(m KVMap, entries []KVInterface) {
+	m.add(entries...)
+}

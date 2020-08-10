@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -138,6 +140,8 @@ func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 			r.setHeader(req, opts, t)
 		case Headers:
 			r.setHeaders(req, t)
+		case Body:
+			r.setBody(req, t)
 		case Modifier:
 			err = t(req, r.hc)
 		default:
@@ -164,4 +168,17 @@ func (r *Requester) setHeaders(req *http.Request, headers Headers) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
+}
+
+// GetJar will return the underlying jar of a request
+func (r *Requester) GetJar() (jar http.CookieJar) {
+	return r.hc.Jar
+}
+
+func (r *Requester) setBody(req *http.Request, body Body) {
+	if r, ok := body.(io.ReadCloser); !ok {
+		req.Body = r
+	}
+
+	req.Body = ioutil.NopCloser(body)
 }
