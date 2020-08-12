@@ -152,7 +152,7 @@ func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 		case Modifier:
 			err = t(req, r.hc)
 		default:
-			err = fmt.Errorf("invalid opts type: expected \"Query\", \"Headers\", or \"Modifier\", received \"%T\"", opt)
+			err = fmt.Errorf("invalid type for opts: \"%T\"", opt)
 		}
 	}
 
