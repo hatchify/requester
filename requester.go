@@ -108,6 +108,11 @@ func (r *Requester) SetOptsPrepender(prepender func() Opts) {
 	r.prepender = prepender
 }
 
+// GetJar will return the underlying jar of a requester instance
+func (r *Requester) GetJar() (jar http.CookieJar) {
+	return r.hc.Jar
+}
+
 // RequestWithContext func that handles making http requests with a given context
 func (r *Requester) newRequest(ctx context.Context, method, path string, body []byte) (req *http.Request, err error) {
 	var u *url.URL
@@ -142,6 +147,8 @@ func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 			r.setHeaders(req, t)
 		case Body:
 			r.setBody(req, t)
+		case BasicAuth:
+			r.setBasicAuth(req, t)
 		case Modifier:
 			err = t(req, r.hc)
 		default:
@@ -170,15 +177,15 @@ func (r *Requester) setHeaders(req *http.Request, headers Headers) {
 	})
 }
 
-// GetJar will return the underlying jar of a request
-func (r *Requester) GetJar() (jar http.CookieJar) {
-	return r.hc.Jar
-}
-
 func (r *Requester) setBody(req *http.Request, body Body) {
 	if r, ok := body.(io.ReadCloser); !ok {
 		req.Body = r
 	}
 
 	req.Body = ioutil.NopCloser(body)
+}
+
+// Private func that will set the basic auth for a request, will not error
+func (r *Requester) setBasicAuth(req *http.Request, basicAuth BasicAuth) {
+	req.SetBasicAuth(basicAuth.username, basicAuth.password)
 }
