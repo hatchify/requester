@@ -138,6 +138,8 @@ func (r *Requester) setOpts(req *http.Request, opts Opts) (err error) {
 			r.setHeader(req, opts, t)
 		case Headers:
 			r.setHeaders(req, t)
+		case BasicAuth:
+			r.setBasicAuth(req, t)
 		case Modifier:
 			err = t(req, r.hc)
 		default:
@@ -164,4 +166,9 @@ func (r *Requester) setHeaders(req *http.Request, headers Headers) {
 		req.Header.Set(headerKey, headerVal)
 		return
 	})
+}
+
+// Private func that will set the basic auth for a request, will not error
+func (r *Requester) setBasicAuth(req *http.Request, basicAuth BasicAuth) {
+	req.SetBasicAuth(basicAuth.username, basicAuth.password)
 }
